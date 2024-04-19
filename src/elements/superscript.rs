@@ -1,4 +1,4 @@
-use crate::identifier::Identifier;
+use crate::elements::identifier::Identifier;
 
 #[allow(dead_code)]
 pub struct Superscript {
