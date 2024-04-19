@@ -1,33 +1,33 @@
-use crate::element::Element;
+use crate::identifier::Identifier;
 
 #[allow(dead_code)]
 pub struct Superscript {
-    base: Element,
-    superscript: Element,
+    base: Identifier,
+    superscript: Identifier,
 }
 
 #[allow(dead_code)]
 impl Superscript {
-    pub fn new(base: &Element, superscript: &Element) -> Self {
+    pub fn new(base: &Identifier, superscript: &Identifier) -> Self {
         Self {
             base: base.clone(),
             superscript: superscript.clone()
         }
     }
 
-    pub fn get_base(&self) -> &Element {
+    pub fn get_base(&self) -> &Identifier {
         &self.base
     }
 
-    pub fn set_base(&mut self, value: &Element) {
+    pub fn set_base(&mut self, value: &Identifier) {
         self.base = value.clone();
     }
 
-    pub fn get_superscript(&self) -> &Element {
+    pub fn get_superscript(&self) -> &Identifier {
         &self.superscript
     }
 
-    pub fn set_superscript(&mut self, value: &Element) {
+    pub fn set_superscript(&mut self, value: &Identifier) {
         self.superscript = value.clone();
     }
 }
@@ -38,8 +38,8 @@ mod tests {
 
     #[test]
     fn it_constructs_a_superscript(){
-        let identifier_a = Element::new(String::from("a"));
-        let identifier_b = Element::new(String::from("b"));
+        let identifier_a = Identifier::new(String::from("a"));
+        let identifier_b = Identifier::new(String::from("b"));
         let superscript = Superscript::new(&identifier_a, &identifier_b);
 
         assert_eq!(&identifier_a, superscript.get_base());
@@ -48,9 +48,9 @@ mod tests {
 
     #[test]
     fn it_can_update_the_base() {
-        let identifier_a = Element::new(String::from("a"));
-        let identifier_b = Element::new(String::from("b"));
-        let identifier_c = Element::new(String::from("c"));
+        let identifier_a = Identifier::new(String::from("a"));
+        let identifier_b = Identifier::new(String::from("b"));
+        let identifier_c = Identifier::new(String::from("c"));
 
         let mut superscript = Superscript::new(&identifier_a, &identifier_b);
 
@@ -61,9 +61,9 @@ mod tests {
 
     #[test]
     fn it_can_update_the_superscript_value() {
-        let identifier_a = Element::new(String::from("a"));
-        let identifier_b = Element::new(String::from("b"));
-        let identifier_c = Element::new(String::from("c"));
+        let identifier_a = Identifier::new(String::from("a"));
+        let identifier_b = Identifier::new(String::from("b"));
+        let identifier_c = Identifier::new(String::from("c"));
 
         let mut superscript = Superscript::new(&identifier_a, &identifier_b);
 

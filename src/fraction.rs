@@ -1,33 +1,33 @@
-use crate::element::Element;
+use crate::identifier::Identifier;
 
 #[allow(dead_code)]
 struct Fraction {
-    denominator: Element,
-    numerator: Element
+    denominator: Identifier,
+    numerator: Identifier
 }
 
 #[allow(dead_code)]
 impl Fraction {
-    fn new(numerator: &Element, denominator: &Element) -> Self {
+    fn new(numerator: &Identifier, denominator: &Identifier) -> Self {
         Self {
             numerator: numerator.clone(),
             denominator: denominator.clone(),
         }
     }
 
-    fn get_numerator(&self) -> &Element {
+    fn get_numerator(&self) -> &Identifier {
         &self.numerator
     }
 
-    fn get_denominator(&self) -> &Element {
+    fn get_denominator(&self) -> &Identifier {
         &self.denominator
     }
 
-    fn set_numerator(&mut self, value: &Element){
+    fn set_numerator(&mut self, value: &Identifier){
         self.numerator = value.clone();
     }
 
-    fn set_denominator(&mut self, value: &Element){
+    fn set_denominator(&mut self, value: &Identifier){
         self.denominator = value.clone();
     }
 }
@@ -38,8 +38,8 @@ mod tests {
 
     #[test]
     fn it_constructs_a_fraction(){
-        let numerator = Element::new(String::from("a"));
-        let denominator = Element::new(String::from("b"));
+        let numerator = Identifier::new(String::from("a"));
+        let denominator = Identifier::new(String::from("b"));
         let fraction = Fraction::new(&numerator, &denominator);
 
         assert_eq!(numerator, *fraction.get_numerator());
@@ -48,9 +48,9 @@ mod tests {
 
     #[test]
     fn test_it_can_change_numerator(){
-        let identifier_a = Element::new(String::from("a"));
-        let identifier_b = Element::new(String::from("b"));
-        let identifier_c = Element::new(String::from("c"));
+        let identifier_a = Identifier::new(String::from("a"));
+        let identifier_b = Identifier::new(String::from("b"));
+        let identifier_c = Identifier::new(String::from("c"));
 
         let mut fraction = Fraction::new(&identifier_a, &identifier_b);
 
@@ -62,9 +62,9 @@ mod tests {
 
     #[test]
     fn test_it_can_change_denominator(){
-        let identifier_a = Element::new(String::from("a"));
-        let identifier_b = Element::new(String::from("b"));
-        let identifier_c = Element::new(String::from("c"));
+        let identifier_a = Identifier::new(String::from("a"));
+        let identifier_b = Identifier::new(String::from("b"));
+        let identifier_c = Identifier::new(String::from("c"));
 
         let mut fraction = Fraction::new(&identifier_a, &identifier_b);
 
