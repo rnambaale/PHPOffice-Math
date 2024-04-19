@@ -1,4 +1,4 @@
-use crate::identifier::Identifier;
+use super::identifier::Identifier;
 
 #[allow(dead_code)]
 struct Fraction {
