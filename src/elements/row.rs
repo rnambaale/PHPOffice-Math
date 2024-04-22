@@ -18,6 +18,10 @@ impl Row {
         &self.elements
     }
 
+    pub fn get_elements_mut(&mut self) -> &mut Vec<CommonElement> {
+        &mut self.elements
+    }
+
     pub fn add(&mut self, element: CommonElement){
         self.elements.push(element);
     }

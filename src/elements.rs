@@ -1,4 +1,4 @@
-use self::{identifier::Identifier, operator::Operator, superscript::Superscript};
+use self::{fraction::Fraction, identifier::Identifier, operator::Operator, superscript::Superscript};
 
 pub trait CommonElementInterface {
     fn get_value(&self) -> &str;
@@ -16,5 +16,6 @@ pub mod superscript;
 pub enum CommonElement {
     Identifier(Identifier),
     Operator(Operator),
-    Superscript(Superscript)
+    Superscript(Superscript),
+    Fraction(Fraction),
 }

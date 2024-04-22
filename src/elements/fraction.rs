@@ -2,33 +2,34 @@
 use crate::elements::identifier::Identifier;
 
 #[allow(dead_code)]
-struct Fraction {
+#[derive(Debug, Clone, PartialEq)]
+pub struct Fraction {
     denominator: Identifier,
     numerator: Identifier
 }
 
 #[allow(dead_code)]
 impl Fraction {
-    fn new(numerator: &Identifier, denominator: &Identifier) -> Self {
+    pub fn new(numerator: &Identifier, denominator: &Identifier) -> Self {
         Self {
             numerator: numerator.clone(),
             denominator: denominator.clone(),
         }
     }
 
-    fn get_numerator(&self) -> &Identifier {
+    pub fn get_numerator(&self) -> &Identifier {
         &self.numerator
     }
 
-    fn get_denominator(&self) -> &Identifier {
+    pub fn get_denominator(&self) -> &Identifier {
         &self.denominator
     }
 
-    fn set_numerator(&mut self, value: &Identifier){
+    pub fn set_numerator(&mut self, value: &Identifier){
         self.numerator = value.clone();
     }
 
-    fn set_denominator(&mut self, value: &Identifier){
+    pub fn set_denominator(&mut self, value: &Identifier){
         self.denominator = value.clone();
     }
 }
