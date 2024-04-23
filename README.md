@@ -1,5 +1,5 @@
 ## Math
-=================
+
 
 [![CI](https://github.com/rnambaale/PHPOffice-Math/actions/workflows/rust.yml/badge.svg)](https://github.com/rnambaale/PHPOffice-Math/actions/workflows/rust.yml)
 
