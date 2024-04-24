@@ -1,3 +1,6 @@
+
+use super::CommonElementInterface;
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Identifier {
@@ -12,7 +15,17 @@ impl Identifier {
         }
     }
 
-    pub fn get_value(&self) -> &str {
+    // pub fn get_value(&self) -> &str {
+    //     &self.value
+    // }
+
+    pub fn set_value(&mut self, value: &str) {
+        self.value = value.to_string();
+    }
+}
+
+impl CommonElementInterface for Identifier {
+    fn get_value(&self) -> &str {
         &self.value
     }
 }
