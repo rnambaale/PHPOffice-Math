@@ -1,6 +1,7 @@
 use crate::elements::identifier::Identifier;
 
 #[allow(dead_code)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Superscript {
     base: Identifier,
     superscript: Identifier,

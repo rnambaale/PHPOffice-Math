@@ -1,5 +1,6 @@
 
 use crate::elements::operator::Operator;
+use crate::elements::superscript::Superscript;
 use crate::elements::CommonElement;
 use crate::{elements::identifier::Identifier, reader::reader_interface::ReaderInterface};
 use crate::elements::row::Row;
@@ -8,8 +9,6 @@ use xml::reader::{EventReader, XmlEvent};
 #[allow(dead_code)]
 pub struct MathMl {
     math: Vec<Row>,
-    // dom: String,//
-    // xpath: String,
 }
 
 #[derive(Debug)]
@@ -17,12 +16,12 @@ enum Common {
     Row(Row),
     Identifier(Identifier),
     Operator(Operator),
+    Superscript(Superscript),
 }
 
 #[allow(dead_code)]
 impl ReaderInterface for MathMl {
     fn read(&mut self, content: &str) -> Result<(), String> {
-        // let content = content.replace("&InvisibleTimes;", "<mchar name=\"InvisibleTimes\"/>");
         let content = content.replace("&InvisibleTimes;", "InvisibleTimes");
 
         let mut elements_stack: Vec<Common> = Vec::new();
@@ -32,25 +31,24 @@ impl ReaderInterface for MathMl {
         for e in parser {
             match e {
                 Ok(XmlEvent::StartElement { name, .. }) => {
-                    // println!("{:spaces$}+{name}", "", spaces = depth * 2);
                     let element_name = name.local_name;
-                    // dbg!("StartElement: ", format!("<{}>", &element_name));
-                    println!("StartElement: <{}>", &element_name);
 
                     match element_name.as_str() {
                         "mrow" => elements_stack.push(Common::Row(Row::new())),
                         "mi" => elements_stack.push(Common::Identifier(Identifier::new(String::from("")))),
                         "mo" => elements_stack.push(Common::Operator(Operator::new(String::from("")))),
+                        "msup" => elements_stack.push(
+                            Common::Superscript(
+                                Superscript::new(&Identifier::new(String::from("")), &Identifier::new(String::from("")))
+                            )
+                        ),
+                        "mn" => elements_stack.push(Common::Identifier(Identifier::new(String::from("")))),
                         _ => {}
                     }
 
                 }
 
                 Ok(XmlEvent::Characters(text)) => {
-                    println!("  Characters {}", text);
-                    // if let Some(element) = elements_stack.last_mut() {
-                    //     element.value = text;
-                    // }
                     match elements_stack.last_mut() {
                         Some(Common::Identifier(element)) => {
                             element.set_value(&text);
@@ -64,19 +62,17 @@ impl ReaderInterface for MathMl {
                 }
 
                 Ok(XmlEvent::EndElement { name }) => {
-                    // println!("{:spaces$}-{name}", "", spaces = depth * 2);
-                    // dbg!("EndElement");
                     let element_name = name.local_name;
-                    // dbg!("EndElement </{}>", &element_name);
-                    println!("EndElement </{}>", &element_name);
                     match element_name.as_str() {
                         "mi" => {
                             if let Some(Common::Identifier(element)) = elements_stack.pop() {
-                                // println!("element: {:#?}", element);
                                 let parent = elements_stack.last_mut().unwrap();
-                                // println!("parent: {:#?}", parent);
                                 if let Common::Row(row) = parent {
                                     row.add(CommonElement::Identifier(element.clone()));
+                                }
+
+                                if let Common::Superscript(superscript) = parent {
+                                    superscript.set_base(&element);
                                 }
                             }
                         },
@@ -88,14 +84,22 @@ impl ReaderInterface for MathMl {
                                 }
                             }
                         }
-                        // "mrow" => {
-                        //     if let Some(Common::Identifier(element)) = elements_stack.pop() {
-                        //         let parent = elements_stack.last_mut().unwrap();
-                        //         if let Common::Row(row) = parent {
-                        //             row.add(&element);
-                        //         }
-                        //     }
-                        // }
+                        "msup" => {
+                            if let Some(Common::Identifier(superscript_identifier)) = elements_stack.pop() {
+                                let parent = elements_stack.last_mut().unwrap();
+
+                                if let Common::Superscript(superscript) = parent {
+                                    superscript.set_superscript(&superscript_identifier);
+                                }
+                            }
+
+                            if let Some(Common::Superscript(superscript)) = elements_stack.pop() {
+                                let parent = elements_stack.last_mut().unwrap();
+                                if let Common::Row(row) = parent {
+                                    row.add(CommonElement::Superscript(superscript.clone()));
+                                }
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -107,31 +111,14 @@ impl ReaderInterface for MathMl {
                 _ => {}
             }
         }
-
-        // self.math = Row::new();
-        // if let Some(Common::Row(row)) = elements_stack.pop() {
-        //     self.math = (row);
-        // }
-        // println!("{:#?}", elements_stack);
         let mut math: Vec<Row> = Vec::new();
         for item in &elements_stack {
             match item {
                 Common::Row(row) => math.push(row.clone()),
                 _ => {}
             }
-            // if let Common::Row(row) = item {
-            //     self.math.push(row.clone());
-            // }
         }
         self.math = math;
-        // match elements_stack.pop() {
-        //     Some(row) => {
-        //         self.math = row;
-        //     }
-        //     None => {}
-        // }
-        // self.math.add(&elements_stack);
-        // self.math = elements_stack;
 
         Ok(())
     }
@@ -165,7 +152,6 @@ mod tests {
         let mut reader = MathMl::new();
         assert!(reader.read(content).is_ok());
 
-
         let math = reader.math;
         assert_eq!(1, math.len());
 
@@ -180,18 +166,31 @@ mod tests {
         let sub_element = &sub_elements[1];
         assert_eq!(CommonElement::Operator(Operator::new(String::from("InvisibleTimes"))), *sub_element);
 
-        // /** @var Element\Superscript $subElement */
-        // $subElement = $subElements[2];
-        // $this->assertInstanceOf(Element\Superscript::class, $subElements[2]);
+        let sub_element = &sub_elements[2];
+        assert_eq!(CommonElement::Superscript(
+            Superscript::new(
+                &Identifier::new(String::from("x")),
+                &Identifier::new(String::from("2")))
+            ),
+            *sub_element
+        );
 
-        // /** @var Element\Identifier $base */
-        // $base = $subElement->getBase();
-        // $this->assertInstanceOf(Element\Identifier::class, $base);
-        // $this->assertEquals('x', $base->getValue());
+        let sub_element = &sub_elements[3];
+        assert_eq!(CommonElement::Operator(Operator::new(String::from("+"))), *sub_element);
 
-        // /** @var Element\Numeric $superscript */
-        // $superscript = $subElement->getSuperscript();
-        // $this->assertInstanceOf(Element\Numeric::class, $superscript);
-        // $this->assertEquals(2, $superscript->getValue());
+        let sub_element = &sub_elements[4];
+        assert_eq!(CommonElement::Identifier(Identifier::new(String::from("b"))), *sub_element);
+
+        let sub_element = &sub_elements[5];
+        assert_eq!(CommonElement::Operator(Operator::new(String::from("InvisibleTimes"))), *sub_element);
+
+        let sub_element = &sub_elements[6];
+        assert_eq!(CommonElement::Identifier(Identifier::new(String::from("x"))), *sub_element);
+
+        let sub_element = &sub_elements[7];
+        assert_eq!(CommonElement::Operator(Operator::new(String::from("+"))), *sub_element);
+
+        let sub_element = &sub_elements[8];
+        assert_eq!(CommonElement::Identifier(Identifier::new(String::from("c"))), *sub_element);
     }
 }
